@@ -3,13 +3,39 @@
 {% block h1%}焊接熔池图像实时监控{% endblock%}
 {% block script %}
 <script type="text/javascript">
+$(document).ready(function(){
+    $('input[name=Station]:eq(0)').attr('checked','checked');
+    var PoolImg_websocket = new WebSocket("ws://"+window.location.host+"/ws/real_time/");
+    PoolImg_websocket.onmessage = function(res){
+        var raw_data = JSON.parse(res.data);
+        //console.log(raw_data);
+        $("#poolimg").attr("src", "data:image/png;base64,"+raw_data.value);
+        $('#current_pose').html("当前位置："+raw_data.date);
+        $('#current_station').html("当前工位："+$("input:radio[name='Station']:checked").val())
+    };
 
+    PoolImg_websocket.onclose = function(){
 
+    };
+
+    $("input:radio[name='Station']").change(function(){
+
+    });
+
+    setInterval(function(){
+        PoolImg_websocket.send(JSON.stringify({
+                "Model":"PoolImg", //需要改变
+                "station":$("input[name=Station]:checked").val()
+            }))
+
+    }, 300);
+
+})
 </script>
 {% endblock %}
 {% block extra %}
 <p><b>熔池图片</b></p>
 <img id="poolimg" src="{{ MEDIA_URL }}poolimg_default/default.png" onerror="javascript:this.src='{{ MEDIA_URL }}history_poolimg/1.jpg'" width="300" height="250"/></br>
 <p id='current_pose'>当前位置：</p></br>
-
+<p id ='current_station'>当前工位：</p></br>
 {% endblock %}
