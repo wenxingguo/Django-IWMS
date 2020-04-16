@@ -1,0 +1,18 @@
+{
+    "workbench.startupEditor": "newUntitledFile",
+    "C_Cpp.updateChannel": "Insiders",
+    "window.zoomLevel": 0,
+    "workbench.colorTheme": "Monokai",
+    "leetcode.endpoint": "leetcode-cn",
+    "leetcode.workspaceFolder": "C:\\Users\\WOOD\\.leetcode",
+    "leetcode.hint.configWebviewMarkdown": false,
+    "leetcode.hint.setDefaultLanguage": false,
+    "leetcode.showCommentDescription": true,
+    "leetcode.hint.commandShortcut": false,
+    "leetcode.hint.commentDescription": false,
+    "terminal.integrated.shell.windows": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "python.linting.pylintArgs": [
+        "--load-plugins", "pylint_django",
+        "--disable-msg=['C0103','C0301','W0312','W0511','W0232','E1101']",
+    ],
+}

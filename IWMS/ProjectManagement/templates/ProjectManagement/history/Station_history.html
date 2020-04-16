@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>焊接工作台</title>
+</head>
+<body>
+    <h1><center><b>焊接工作台查询</b></center></h1>
+    
+    <div>
+        <ul>
+        {% for station in Station_list%}
+        <li><b>{{station.name}}</b></li>
+        <p>{{station.description}}</p>
+        {% endfor %}
+        </ul>
+    </div>
+        
+</body>
+</html>
+
+    

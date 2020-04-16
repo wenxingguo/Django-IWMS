@@ -1,0 +1,110 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %} {% endblock title %}</title>
+    {%block style%}{%endblock style%}
+    <!-- 引入 echarts.js -->
+    <script src="{% static 'ProjectManagement/js/echarts.min.js' %}"></script>
+    <script src="{% static 'ProjectManagement/js/jquery-3.4.1.min.js' %}"></script>
+    {% block script %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+        //设置ajax
+        $.ajaxSetup({ 
+            data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+        });
+        //初始化chart
+        var myChart = echarts.init(document.getElementById('chart'));
+        var option = {
+            title: {
+                text: $("#chart_title").html(), //改变
+            },
+            tooltip: {},
+            legend: {
+                //data:[$("#chart_legend").html()]//改变
+            },
+            xAxis: {
+            },
+            yAxis: {},
+            series: [{
+                name: $("#chart_series_name").html(),//改变
+                type: 'line',
+            }]
+        };
+        //myChart.showLoading();
+        $('#searchbutton').click(on_searchbutton_click);
+        
+        function search_and_show(post_data, url){
+            myChart.showLoading();
+            $.post(url, post_data, function (res){
+                if(res){
+                    option.xAxis.data = res.x;
+                    option.series[0].data = res.y;
+                    //console.log(res.x);
+                    myChart.hideLoading();
+                    myChart.setOption(option);
+                    
+                }else{
+                    alert("数据请求错误");
+                    myChart.hideLoading();
+                }
+            });
+        };
+
+        function on_searchbutton_click(){
+
+            var data = {
+                start: $('#startdate').val() + ' ' + $('#starttime').val(),
+                end: $('#enddate').val() + ' ' + $('#endtime').val(),
+                recent_time_range:$("input[name=recent_time_range]:checked").val(),
+                station:$("input[name=Station]:checked").val(),
+                model:$("#model").html() //需要改变
+            };
+            
+            if(data.recent_time_range === 'no_recent'){
+                if(data.start === ' ' ||  data.end === ' '){
+                    alert("注意选择正确的时间");
+                    return;
+                }
+            }
+
+            if(!data.station){
+                alert("请选择Station");
+                return;
+            }
+            url = "{% url 'ProjectManagement:ajax_server' %}";
+            search_and_show(data, url);
+        };
+    });
+    </script>
+    {% endblock script %}
+</head>
+
+<body>
+    <h1><center><b>{%block h1%}{%endblock h1%}</b></center></h1>
+    <div id='search-block'>
+        <center>
+            <input type="date" id = 'startdate'></input><input id='starttime' type="time">开始时间</input>
+            <input type="date" id = 'enddate'></input><input id='endtime' type="time">结束时间</input></br>
+            <div id= 'recent'>
+            <input type="radio" name="recent_time_range" value="no_recent" checked>不启用最近</input>
+            <input type="radio" name="recent_time_range" value="one_day">最近一天</input>
+            <input type="radio" name="recent_time_range" value="one_hour">最近一小时</input>
+            <input type="radio" name="recent_time_range" value="ten_min">最近十分钟</input>
+            </div></br>
+            <div id = 'Station-option'>
+                {% for station in Station_list %}
+                <input type="radio" name="Station" value="{{station.name}}" />{{station.name}}
+                {% endfor %}
+            </div>
+            <button id='searchbutton' >查询</button></br>
+            {%block extra%}{%endblock extra%}
+        </center>
+    </div>
+    
+    {%block hidden_imformation %}{%endblock%}
+
+    <center><div id="chart" style="width: 1200px;height:300px;"></div></center>
+</body>

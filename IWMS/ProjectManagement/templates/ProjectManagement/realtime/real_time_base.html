@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %} {% endblock title %}</title>
+    {% block style%}{% endblock style%}
+    <!-- 引入 echarts.js -->
+    <script src="{% static 'ProjectManagement/js/echarts.min.js' %}"></script>
+    <script src="{% static 'ProjectManagement/js/jquery-3.4.1.min.js' %}"></script>
+    {% block script %}
+    <script type="text/javascript">
+    $(document).ready(function(){
+        var mychart = echarts.init(document.getElementById('chart'));
+        
+        $('input[name=Station]:eq(0)').attr('checked','checked');
+        var data_len = 100;
+        var x_data = [], y_data=[];
+
+        var option = {
+            title:{
+                text:$("#chart_title").html(), //需要改变
+            },
+            tooltip:{},
+            legend:{},
+            xAxis:{
+                data:[]
+            },
+            yAxis:{
+                boundaryGap: [0, '100%'],
+                plitLine: {
+                    show: true
+                }
+            },
+            series:[{
+                name:$("#chart_series_name").html(), //需要改变
+                type:'line',
+                showSymbol: false,
+                hoverAnimation: false,
+            }]
+
+        };
+        mychart.setOption(option);
+        var websocket = new WebSocket("ws://"+window.location.host+"/ws/real_time/"); //创建websocket
+        websocket.onmessage = function(res){
+            var raw_data = JSON.parse(res.data);
+            //console.log(x_data);
+            y_data.push(raw_data.value); 
+            x_data.push(raw_data.date);
+            
+            if(y_data.length > data_len){
+                y_data = y_data.slice(1, data_len+1);
+                x_data = x_data.slice(1, data_len+1);
+            }
+
+            mychart.setOption({
+                xAxis:{
+                    data:x_data
+                },
+                series:[{
+                    data:y_data
+                }]
+            });
+        };
+
+        websocket.onclose = function(){
+            
+        };
+
+        $("input:radio[name='Station']").change(function(){
+            y_data = [];
+            x_data =[]
+            mychart.setOption({
+                xAxis:{
+                    data:x_data
+                },
+                series:[{
+                    data:y_data
+                }]
+            });
+        });
+
+        setInterval(function() {
+            websocket.send(JSON.stringify({
+                "Model":$("#model").html(), //需要改变
+                "station":$("input[name=Station]:checked").val()
+            }))
+            
+        }, 1500);//轮询
+
+    });
+    </script>
+    {% endblock %}
+</head>
+<body>
+    <center/><h1>{%block h1%}{%endblock%}</h1> 
+    <div id="Station-Option">
+        {% for station in Station_list %}
+        <input type="radio" name="Station" value="{{station.name}}">{{station.name}}</input>
+        {% endfor %}
+    </div>
+    <p></p>
+    <center><div id="chart" style="width: 1200px;height:300px;"></div></center>
+    {% block hidden %}{% endblock %}
+</body>
+</html>

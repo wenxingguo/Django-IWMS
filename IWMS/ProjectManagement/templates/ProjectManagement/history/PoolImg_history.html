@@ -1,0 +1,178 @@
+{% extends 'ProjectManagement/history/history_base.html' %}
+{% block title %}历史熔池照片查询{% endblock title %}
+{%block style%}
+<style>
+    input[type=range]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+    }
+
+    input[type=range]{
+        width: 500px;
+    }
+
+    input[type=range]::-webkit-slider-runnable-track {
+        height: 15px;
+        border-radius: 10px; /*将轨道设为圆角的*/
+        box-shadow: 0 1px 1px #def3f8, inset 0 .125em .125em #0d1112; /*轨道内置阴影效果*/
+    }
+
+    input[type=range]:focus {
+        outline: none;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        height: 25px;
+        width: 25px;
+        margin-top: -5px; /*使滑块超出轨道部分的偏移量相等*/
+        background: #ffffff; 
+        border-radius: 50%; /*外观设置为圆形*/
+        border: solid 0.125em rgba(205, 224, 230, 0.5); /*设置边框*/
+        box-shadow: 0 .125em .125em #3b4547; /*添加底部阴影*/
+    }
+</style>
+
+{%endblock style%}}
+{%block h1%}历史熔池照片查询{%endblock h1%}
+{% block script %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        //设置ajax
+       $.ajaxSetup({
+           data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+       });
+
+       $('#searchbutton').click(on_searchbutton_click);
+       $('#time_range').change(on_rangebar_value_changed);
+       $('#begin').click(on_begin_button_click);
+       $('#suspend').click(on_suspend_button_click);
+       $('#stop').click(on_stop_button_click);
+
+       var time_stamp; //保存ajax返回的时间戳列表
+       var img_socket = new WebSocket("ws://"+window.location.host+"/ws/PoolImg/");
+       //设置websocket
+       var WebSocket_request_data = {
+           model:"PoolImg",
+           station:"",
+       };
+       img_socket.onmessage = function(text_data){
+           var raw_data = JSON.parse(text_data.data);
+           $("#poolimg").attr("src", "data:image/png;base64,"+raw_data.base64);
+           $('#current_pos').html("当前位置："+getFormatedata(WebSocket_request_data.timestamp));
+       };
+        img_socket.onclose = function(){
+            console.error("websocket is closed");
+       };
+
+       var len;
+       var myinterval;
+       var interval_count = 0;
+       var set_range_flag = 0;
+       
+       function search_sql(post_data, url){
+           $.post(url, post_data, function(res){
+                if(res){
+                    len = res.timestamp_list.length
+                    time_stamp = res.timestamp_list;
+                    $('#start_time').html("开始："+getFormatedata(res.timestamp_list[0]));
+                    $('#end_time').html("结束："+getFormatedata(res.timestamp_list[len-1]));
+                    $('#time_range').attr({"max":len-1,});
+                    WebSocket_request_data.timestamp = res.timestamp_list[0];
+                    $('#time_range').val(0).trigger("change");
+                    $('#current_pos').html("当前位置："+getFormatedata(res.timestamp_list[0]));
+                }else{
+                    alert("数据请求错误");
+                }
+
+           });
+       };
+
+       function on_searchbutton_click(){
+           set_range_flag = 1;
+           var data = {
+                start: $('#startdate').val() + ' ' + $('#starttime').val(),
+                end: $('#enddate').val() + ' ' + $('#endtime').val(),
+                recent_time_range:$("input[name=recent_time_range]:checked").val(),
+                station:$("input[name=Station]:checked").val(),
+                model:"PoolImg" 
+            };
+            WebSocket_request_data.station=$("input[name=Station]:checked").val();
+            //console.log(WebSocket_request_data);
+            if(data.recent_time_range === 'no_recent'){
+                if(data.start === ' ' ||  data.end === ' '){
+                    alert("注意选择正确的时间");
+                    return;
+                }
+            }
+            if(!data.station){
+                alert("请选择Station");
+                return;
+            }
+            url = "{% url 'ProjectManagement:ajax_server' %}";
+            search_sql(data, url);
+       };
+
+       function on_begin_button_click(){
+           if(set_range_flag === 0){
+               alert("请设定查询范围，并且点击查询按钮！！！")
+               return;
+           }
+           if(interval_count === 0){
+                myinterval = setInterval(function(){
+                var rangebar_currentValue=Number($('#time_range').val());
+                if(rangebar_currentValue === Number($('#time_range').attr('max'))){
+                    on_suspend_button_click();
+                }
+                $('#time_range').val(rangebar_currentValue+1).trigger("change");
+                    }, 100);
+                interval_count = 1;
+           }
+       };
+
+       function on_suspend_button_click(){
+            if(set_range_flag === 0){
+               alert("请设定查询范围，并且点击查询按钮！！！")
+               return;
+            }
+            if(interval_count === 1){
+               clearInterval(myinterval);
+                interval_count = 0;
+            }
+        }
+
+        function on_stop_button_click(){
+            if(set_range_flag === 0){
+               alert("请设定查询范围，并且点击查询按钮！！！");
+               return;
+           }
+            if(interval_count === 1){
+               clearInterval(myinterval);
+                interval_count = 0;
+           }
+           $('#time_range').val(0).trigger("change");
+        }
+
+        function on_rangebar_value_changed(){
+            var rangebar_currentValue=Number($('#time_range').val());
+            WebSocket_request_data.timestamp = time_stamp[rangebar_currentValue];
+            //console.log(WebSocket_request_data);
+            img_socket.send(JSON.stringify(WebSocket_request_data));
+        };
+
+        function getFormatedata(timestamp_seconds){
+            var date = new Date();
+            date.setTime(timestamp_seconds*1000);
+            return date.getFullYear()+"/"+(date.getUTCMonth()+1)+"/"+date.getDate()+ " "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+        };
+
+    });
+
+</script>
+{% endblock script %}
+{%block extra%}
+    <p><b>熔池图片</b></p>
+    <img id="poolimg" src="{{ MEDIA_URL }}poolimg_default/default.png" onerror="javascript:this.src='{{ MEDIA_URL }}history_poolimg/1.jpg'" width="300" height="250"/></br>
+    <p id='current_pos'>当前位置：</p></br>
+    <b id='start_time'>开始   </b><input id="time_range" type="range" min=0 max=100 step="1" ><b id='end_time'/>结束    </b></br>
+    <button id="begin">开始</button><button id="suspend">暂停</button><button id='stop'>停止</button>
+{%endblock extra%}}
