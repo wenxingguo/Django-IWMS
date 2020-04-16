@@ -1,0 +1,15 @@
+{% extends "ProjectManagement/realtime/real_time_base.html"%}
+{% block title %}焊接熔池图像实时监控{% endblock title %}
+{% block h1%}焊接熔池图像实时监控{% endblock%}
+{% block script %}
+<script type="text/javascript">
+
+
+</script>
+{% endblock %}
+{% block extra %}
+<p><b>熔池图片</b></p>
+<img id="poolimg" src="{{ MEDIA_URL }}poolimg_default/default.png" onerror="javascript:this.src='{{ MEDIA_URL }}history_poolimg/1.jpg'" width="300" height="250"/></br>
+<p id='current_pose'>当前位置：</p></br>
+
+{% endblock %}

@@ -93,14 +93,17 @@
     {% endblock %}
 </head>
 <body>
-    <center/><h1>{%block h1%}{%endblock%}</h1> 
+    <center>
+    <h1>{%block h1%}{%endblock%}</h1> 
     <div id="Station-Option">
         {% for station in Station_list %}
         <input type="radio" name="Station" value="{{station.name}}">{{station.name}}</input>
         {% endfor %}
     </div>
     <p></p>
-    <center><div id="chart" style="width: 1200px;height:300px;"></div></center>
+    {% block extra %}{% endblock %}
+    </center>
     {% block hidden %}{% endblock %}
+    <center><div id="chart" style="width: 1200px;height:300px;"></div></center>
 </body>
 </html>
