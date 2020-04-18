@@ -36,7 +36,7 @@ class PoolIMGConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         #print(text_data_json)
         #获取需要的item
-        item = await database_sync_to_async(models_dict[text_data_json['model']].objects.filter(Station__name=text_data_json['station']).get)(date_time=int(text_data_json['timestamp']))
+        item = await database_sync_to_async(models_dict[text_data_json['model']].objects.filter(Station__name=text_data_json['station'], date_time=int(text_data_json['timestamp'])).last)()
         #print(item.date_time)
         await self.send(text_data=json.dumps({
             "base64":item.value

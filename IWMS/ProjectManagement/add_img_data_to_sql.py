@@ -5,9 +5,9 @@ import base64
 half_day = 3600*13
 toal = 0
 img_path = 'C:\\Users\\WOOD\\Desktop\\process-img\\imgs'
-station_ = Station.objects.get(pk = 2)
+station_ = Station.objects.get(pk = 1)
 i = 1
-end_time_stamp = int(datetime.datetime.now().timestamp())
+#end_time_stamp = int(datetime.datetime.now().timestamp())
 while toal < half_day:
     with open(img_path+"\\"+str(i)+".jpg", 'rb') as f:
         img_base64 = base64.b64encode(f.read()).decode()

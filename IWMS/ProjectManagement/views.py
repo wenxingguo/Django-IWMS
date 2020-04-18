@@ -52,6 +52,7 @@ def ajax_server(request):
         for item in item_list:
             #y_data.append(item.value.name)
             time_data.append(item.date_time)#倒序
+            #print(item.date_time)
         return JsonResponse({
             #'img_url_list':y_data,
             'timestamp_list':time_data,

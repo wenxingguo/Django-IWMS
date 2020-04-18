@@ -73,9 +73,11 @@
            $.post(url, post_data, function(res){
                 if(res){
                     len = res.timestamp_list.length
+                    //console.log(len);
                     time_stamp = res.timestamp_list;
                     $('#start_time').html("开始："+getFormatedata(res.timestamp_list[0]));
                     $('#end_time').html("结束："+getFormatedata(res.timestamp_list[len-1]));
+                    //console.log(res.timestamp_list[len-1])
                     $('#time_range').attr({"max":len-1,});
                     WebSocket_request_data.timestamp = res.timestamp_list[0];
                     $('#time_range').val(0).trigger("change");
