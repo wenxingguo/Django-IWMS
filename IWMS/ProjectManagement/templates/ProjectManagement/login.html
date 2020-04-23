@@ -1,0 +1,27 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<div class="container">
+  <center>
+  <form class="form-signin" action="{% url 'ProjectManagement:login_action' %}" method="post">
+  {% csrf_token %} <!--csrf_token：生成令牌-->
+    <h2 class="form-signin-heading" align="center">登录系统</h2>
+    <label for="inputUsername" class="sr-only">username</label>
+    <input type="text" name="username" id="inputUsername" class="form-control" placeholder="username" required autofocus></br>
+    <label for="inputPassword" class="sr-only">Password</label>
+    <input type="password" name="passwd" id="inputPassword" class="form-control" placeholder="Password" required></br>
+    {% if error_massage%}
+    <p><font size='1px' color='red'>{{ error_massage }}</font></p>
+    {% else %}
+    </br>
+    {% endif %}
+    <button class="btn btn-lg btn-primary btn-block" type="submit">登录</button>
+  </form>
+  </center>
+</div>
+</body>
+</html>

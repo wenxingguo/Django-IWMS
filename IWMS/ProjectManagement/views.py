@@ -1,7 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse, Http404
 from ProjectManagement.models import Voltage, Station, Current, Sound, PoolImg
 import datetime, time
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 time_pattern = [
     "%Y-%m-%d %H:%M:%S",
@@ -17,14 +19,41 @@ models_dict = {
     'Sound':Sound
 }
 
+def login_input(request):
+    return render(request, "ProjectManagement/login.html")
+
+def log_in(request):
+    username= request.POST['username']
+    passwd = request.POST['passwd']
+    user = authenticate(request, username=username, password=passwd)
+    print(request)
+    if user is not None:
+        login(request, user)
+        return redirect("/ProjectManagement/index/")
+    else:
+        return render(request,"ProjectManagement/login.html", {'error_massage':'用户名或密码错误'})
+
+@login_required
+def index(request):
+    print(request.user.username)
+    return render(request, 'ProjectManagement/index.html',{'user':request.user})
+
+
+
+@login_required
+def log_out(request):
+    logout(request)
+    return redirect('/ProjectManagement/login/')
+
+@login_required
 def history_view(request, MODEL):
+    print(request.user)
     if MODEL in models_dict:
         return render(request, 'ProjectManagement/history/'+MODEL+'_history.html', {'Station_list':Station.objects.all()})
     else:
         return Http404
 
 def ajax_server(request):
-    #print(request.POST['model'])
 
     item_list = models_dict[request.POST['model']].objects.filter(Station__name=request.POST['station']) #筛选工位
     
@@ -70,7 +99,7 @@ def ajax_server(request):
         'y':y_data
     })
 
-
+@login_required
 def real_time_view(request, MODEL):
     if MODEL in models_dict:
         return render(request, 'ProjectManagement/realtime/'+MODEL+'_real_time.html', {'Station_list':Station.objects.all()})

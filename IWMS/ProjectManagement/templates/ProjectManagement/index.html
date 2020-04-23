@@ -1,0 +1,76 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>页面布局2</title>
+        <style type='text/css'>
+            *{
+				padding:0px;
+				margin:0px;
+			}
+			body{
+				background-color:lightcyan;
+			}
+
+			#box{
+				width:1200px;
+				margin:0 auto;
+				font-size:0;
+			}
+			#logo{
+				height:50px;
+				background-color:lightblue;
+			}
+			#nav{
+				display:inline-block;
+				width:200px;
+				height:700px;
+				background-color:burlywood;
+				
+			}
+			#main{
+				display:inline-block;
+				width:1000px;
+				height:700px;
+				background-color:lightgoldenrodyellow;
+				float:right;
+				
+			}
+		</style>
+	</head>
+	<body>
+		<div id='box'>
+			<div id='logo'>
+				<center><span style="font-size:30px">焊接数据查询平台</span></center>
+			</div>
+			<div id='nav'>
+                <div style="font-size:15px;margin-left:20px;margin-top:100px;">
+                    <p style="font-size:10px" >用户名：{{ user.username }}           <button><a href="{% url 'ProjectManagement:log_out' %}">注销</a></button></p>
+                    <br>
+                    <ul type='none'>
+                        <p>历史数据查询</p>
+                        <li><a href="/ProjectManagement/history/Voltage">历史电压查询</a></li>
+                        <li><a href="/ProjectManagement/history/Current">历史电流查询</a></li>
+                        <li><a href="/ProjectManagement/history/Sound">历史声音查询</a></li>
+                        <li><a href="/ProjectManagement/history/PoolImg">历史熔池照片查询</a></li>
+                        <br>
+                        <p>实时数据查询</p>
+                        <li><a href="/ProjectManagement/real_time/Voltage">实时电压查询</a></li>
+                        <li><a href="/ProjectManagement/real_time/Current">实时电流查询</a></li>
+                        <li><a href="/ProjectManagement/real_time/Sound">实时声音查询</a></li>
+                        <li><a href="/ProjectManagement/real_time/PoolImg">实时熔池照片查询</a></li>
+                        <br>
+                        <p>工位信息</p>
+                        <li><a href="/ProjectManagement/history/Station">工位</a></li>
+                    </ul>
+                </div>
+			</div>
+            <div id='main'>
+            <p style="font-size:60px;margin-left:50px;margin-top:100px;">介绍区域</p>
+
+			</div>
+		</div>
+		
+	</body>
+</html>
