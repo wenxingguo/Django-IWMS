@@ -1,9 +1,15 @@
-
+{% load static%}
 <!DOCTYPE html>
 <html>
 	<head>
 		<meta charset="utf-8" />
-		<title>页面布局2</title>
+		<title>焊接数据查询平台</title>
+		<script src="{% static 'ProjectManagement/js/jquery-3.4.1.min.js' %}"></script>
+		<script type='text/javascript'>
+			function select(button){
+					$('#if_src').attr('src', button.attributes["href"].value);
+				};
+		</script>
         <style type='text/css'>
             *{
 				padding:0px;
@@ -37,6 +43,15 @@
 				float:right;
 				
 			}
+			#if_src{
+				width:100%;
+				height:100%;
+				border-top-width: 0px;
+    			border-right-width: 0px;
+    			border-bottom-width: 0px;
+    			border-left-width: 0px;
+				border-style: inset;
+			}
 		</style>
 	</head>
 	<body>
@@ -50,25 +65,25 @@
                     <br>
                     <ul type='none'>
                         <p>历史数据查询</p>
-                        <li><a href="/ProjectManagement/history/Voltage">历史电压查询</a></li>
-                        <li><a href="/ProjectManagement/history/Current">历史电流查询</a></li>
-                        <li><a href="/ProjectManagement/history/Sound">历史声音查询</a></li>
-                        <li><a href="/ProjectManagement/history/PoolImg">历史熔池照片查询</a></li>
+                        <li><button onclick="select(this)" href="/ProjectManagement/history/Voltage">历史电压查询</button></li>
+                        <li><button onclick="select(this)" href="/ProjectManagement/history/Current">历史电流查询</button></li>
+                        <li><button onclick="select(this)" href="/ProjectManagement/history/Sound">历史声音查询</button></li>
+                        <li><button onclick="select(this)" href="/ProjectManagement/history/PoolImg">历史熔池照片查询</button></li>
                         <br>
                         <p>实时数据查询</p>
-                        <li><a href="/ProjectManagement/real_time/Voltage">实时电压查询</a></li>
-                        <li><a href="/ProjectManagement/real_time/Current">实时电流查询</a></li>
-                        <li><a href="/ProjectManagement/real_time/Sound">实时声音查询</a></li>
-                        <li><a href="/ProjectManagement/real_time/PoolImg">实时熔池照片查询</a></li>
+                        <li><button onclick="select(this)" href="/ProjectManagement/real_time/Voltage">实时电压查询</button></li>
+                        <li><button onclick="select(this)" href="/ProjectManagement/real_time/Current">实时电流查询</button></li>
+                        <li><button onclick="select(this)" href="/ProjectManagement/real_time/Sound">实时声音查询</button></li>
+                        <li><button onclick="select(this)" href="/ProjectManagement/real_time/PoolImg">实时熔池照片查询</button></li>
                         <br>
                         <p>工位信息</p>
-                        <li><a href="/ProjectManagement/history/Station">工位</a></li>
+                        <li><button onclick="select(this)" href="/ProjectManagement/history/Station">工位</button></li>
                     </ul>
                 </div>
 			</div>
             <div id='main'>
-            <p style="font-size:60px;margin-left:50px;margin-top:100px;">介绍区域</p>
-
+			<iframe id='if_src' src=""></iframe>
+            
 			</div>
 		</div>
 		

@@ -1,8 +1,14 @@
-
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <style type='text/css'>
+      *{
+        background-image:url("{% static 'ProjectManagement/img/login_background.jpg' %}");
+        background-size:cover;
+      }
+    </style>
 </head>
 <body>
 <div class="container">
@@ -15,7 +21,9 @@
     <label for="inputPassword" class="sr-only">Password</label>
     <input type="password" name="passwd" id="inputPassword" class="form-control" placeholder="Password" required></br>
     {% if error_massage%}
-    <p><font size='1px' color='red'>{{ error_massage }}</font></p>
+    <script>
+      alert("{{error_massage}}");
+    </script>
     {% else %}
     </br>
     {% endif %}

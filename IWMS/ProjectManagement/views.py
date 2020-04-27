@@ -4,6 +4,7 @@ from ProjectManagement.models import Voltage, Station, Current, Sound, PoolImg
 import datetime, time
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.clickjacking import xframe_options_exempt
 # Create your views here.
 time_pattern = [
     "%Y-%m-%d %H:%M:%S",
@@ -18,6 +19,7 @@ models_dict = {
     'PoolImg':PoolImg,
     'Sound':Sound
 }
+
 
 def login_input(request):
     return render(request, "ProjectManagement/login.html")
@@ -45,6 +47,7 @@ def log_out(request):
     logout(request)
     return redirect('/ProjectManagement/login/')
 
+@xframe_options_exempt
 @login_required
 def history_view(request, MODEL):
     print(request.user)
@@ -99,6 +102,7 @@ def ajax_server(request):
         'y':y_data
     })
 
+@xframe_options_exempt
 @login_required
 def real_time_view(request, MODEL):
     if MODEL in models_dict:
